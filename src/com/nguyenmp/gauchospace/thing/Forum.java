@@ -1,7 +1,9 @@
 package com.nguyenmp.gauchospace.thing;
 
+import java.io.Serializable;
 
-public class Forum {
+
+public class Forum implements Serializable {
 	private String mName = null,
 			mDescriptionHtml = null;
 	private boolean mSubscribed = false;

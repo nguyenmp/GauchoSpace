@@ -1,11 +1,16 @@
 package com.nguyenmp.gauchospace.thing;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 
-public class User implements Comparable<User> {
+public class User implements Comparable<User>, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6426534274579568793L;
 	String mUrl = null;
 	String mName = null;
 	String mSummary = null;
@@ -74,7 +79,11 @@ public class User implements Comparable<User> {
 	}
 
 
-	public static class Attribute {
+	public static class Attribute implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1008048022836907145L;
 		private String key = null;
 		private String value = null;
 		

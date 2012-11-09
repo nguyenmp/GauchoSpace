@@ -1,9 +1,14 @@
 package com.nguyenmp.gauchospace.thing;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Course {
+public class Course implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6265010175935790470L;
 	private String mName = null;
 	private String mUrl = null;
 	private String mSummary = null;

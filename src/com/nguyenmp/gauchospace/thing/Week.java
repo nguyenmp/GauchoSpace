@@ -1,9 +1,10 @@
 package com.nguyenmp.gauchospace.thing;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Week {
+public class Week implements Serializable {
 	private String mTitle = null, mSummary = null, mHtml;
 	private boolean mCurrent = false;
 	private List<Resource> mContent = null;

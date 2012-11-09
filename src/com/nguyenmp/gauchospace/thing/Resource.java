@@ -1,7 +1,9 @@
 package com.nguyenmp.gauchospace.thing;
 
+import java.io.Serializable;
 
-public class Resource {
+
+public class Resource implements Serializable {
 	private String mText = null, mImageUrl = null, mImageDescription, mUrl = null;
 	
 	public Resource(String text, String imageUrl, String imageDescription, String url) {
