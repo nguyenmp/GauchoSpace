@@ -9,6 +9,7 @@
 package com.nguyenmp.gauchospace;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -18,14 +19,15 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
+import com.nguyenmp.gauchospace.thing.Forum;
 import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
 import com.nguyenmp.gauchospace.thing.grade.GradeItem;
 
 public class Tester {
 	public static void main(String[] args) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException, UnparsableHtmlException{
 		CookieStore cookies = GauchoSpaceClient.login("username", "password");
-		GradeFolder folder = GauchoSpaceClient.getGrade(2196, cookies);
-		printFolder(folder);
+		List<Forum> forums = GauchoSpaceClient.getForums(1, cookies);
+		System.out.println(forums);
 	}
 	
 	private static int indent = 0;

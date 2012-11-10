@@ -89,4 +89,9 @@ public class Forum implements Serializable {
 	public int getNumberOfDiscussions() {
 		return mNumDiscussions;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Name:%s, Description: %s, Subscribed: %s, Discussions: %d, ID: %d", mName, mDescriptionHtml, mSubscribed, mNumDiscussions, mID);
+	}
 }

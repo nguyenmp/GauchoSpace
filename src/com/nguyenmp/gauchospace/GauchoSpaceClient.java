@@ -39,6 +39,7 @@ import org.xml.sax.SAXNotSupportedException;
 
 import com.nguyenmp.gauchospace.common.Constants;
 import com.nguyenmp.gauchospace.parser.CoursesParser;
+import com.nguyenmp.gauchospace.parser.ForumsParser;
 import com.nguyenmp.gauchospace.parser.GradeParser;
 import com.nguyenmp.gauchospace.parser.ParticipantsParser;
 import com.nguyenmp.gauchospace.parser.UserParser;
@@ -371,10 +372,44 @@ public class GauchoSpaceClient {
 	 * @param courseID The ID of the course under which these forums belong.
 	 * @param cookies The cookies of the user.
 	 * @return A list of Forums that belong to this Course.
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
 	 */
-	public static List<Forum> getForumsFromCourse(int courseID, CookieStore cookies) {
-		//TODO: Write the forums parser
-		return null;
+	public static List<Forum> getForums(int courseID, CookieStore cookies) throws ClientProtocolException, IOException {
+		//Create client and context
+		HttpClient client = getClient();
+		HttpContext context = getContext(cookies);
+		
+		//Create GET
+		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/mod/forum/index.php?id=" + courseID);
+		
+		//Do GET
+		HttpResponse response = client.execute(get, context);
+		
+		//Get content of response
+		HttpEntity entity = response.getEntity();
+		
+		//Read content
+		String forumsHtml = getStringFromEntity(entity);
+		
+		//Close connection
+		get.abort();
+		
+		List<Forum> forums = null;
+		
+		try {
+			forums = ForumsParser.getForums(forumsHtml);
+		} catch (SAXNotRecognizedException e) {
+			e.printStackTrace();
+		} catch (SAXNotSupportedException e) {
+			e.printStackTrace();
+		} catch (TransformerFactoryConfigurationError e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+		
+		return forums;
 	}
 	
 	/**
