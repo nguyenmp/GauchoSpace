@@ -39,6 +39,7 @@ import org.xml.sax.SAXNotSupportedException;
 
 import com.nguyenmp.gauchospace.common.Constants;
 import com.nguyenmp.gauchospace.parser.CoursesParser;
+import com.nguyenmp.gauchospace.parser.ForumParser;
 import com.nguyenmp.gauchospace.parser.ForumsParser;
 import com.nguyenmp.gauchospace.parser.GradeParser;
 import com.nguyenmp.gauchospace.parser.ParticipantsParser;
@@ -46,6 +47,7 @@ import com.nguyenmp.gauchospace.parser.UserParser;
 import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser;
 import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
 import com.nguyenmp.gauchospace.thing.Course;
+import com.nguyenmp.gauchospace.thing.Discussion;
 import com.nguyenmp.gauchospace.thing.Forum;
 import com.nguyenmp.gauchospace.thing.User;
 import com.nguyenmp.gauchospace.thing.Week;
@@ -412,6 +414,51 @@ public class GauchoSpaceClient {
 		return forums;
 	}
 	
+	/**
+	 * Gets a list of forums that belong under the specified course.
+	 * @param courseID The ID of the course under which these forums belong.
+	 * @param cookies The cookies of the user.
+	 * @return A list of Forums that belong to this Course.
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
+	 */
+	public static List<Discussion> getForum(int forumID, CookieStore cookies) throws ClientProtocolException, IOException {
+		//Create client and context
+		HttpClient client = getClient();
+		HttpContext context = getContext(cookies);
+		
+		//Create GET
+		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/mod/forum/view.php?f=" + forumID);
+		
+		//Do GET
+		HttpResponse response = client.execute(get, context);
+		
+		//Get content of response
+		HttpEntity entity = response.getEntity();
+		
+		//Read content
+		String forumHtml = getStringFromEntity(entity);
+		
+		//Close connection
+		get.abort();
+		
+		List<Discussion> discussions = null;
+		
+		try {
+			discussions = ForumParser.getDiscussions(forumHtml);
+		} catch (SAXNotRecognizedException e) {
+			e.printStackTrace();
+		} catch (SAXNotSupportedException e) {
+			e.printStackTrace();
+		} catch (TransformerFactoryConfigurationError e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+		
+		return discussions;
+	}
+
 	/**
 	 * Reads the content of an entity into a String and returns that String.  If the 
 	 * stream is currently blocked, this function will also block until the end of 

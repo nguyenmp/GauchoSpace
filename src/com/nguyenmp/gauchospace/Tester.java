@@ -19,6 +19,7 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
+import com.nguyenmp.gauchospace.thing.Discussion;
 import com.nguyenmp.gauchospace.thing.Forum;
 import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
 import com.nguyenmp.gauchospace.thing.grade.GradeItem;
@@ -27,7 +28,8 @@ public class Tester {
 	public static void main(String[] args) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException, UnparsableHtmlException{
 		CookieStore cookies = GauchoSpaceClient.login("username", "password");
 		List<Forum> forums = GauchoSpaceClient.getForums(1, cookies);
-		System.out.println(forums);
+		List<Discussion> discussions = GauchoSpaceClient.getForum(1, cookies);
+		System.out.println(discussions);
 	}
 	
 	private static int indent = 0;
