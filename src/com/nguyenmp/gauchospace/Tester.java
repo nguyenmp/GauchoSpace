@@ -28,8 +28,8 @@ public class Tester {
 	public static void main(String[] args) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException, UnparsableHtmlException{
 		CookieStore cookies = GauchoSpaceClient.login("username", "password");
 		List<Forum> forums = GauchoSpaceClient.getForums(1, cookies);
-		List<Discussion> discussions = GauchoSpaceClient.getForum(1, cookies);
-		System.out.println(discussions);
+//		List<Discussion> discussions = GauchoSpaceClient.getForum(1, cookies);
+		System.out.println(forums);
 	}
 	
 	private static int indent = 0;
