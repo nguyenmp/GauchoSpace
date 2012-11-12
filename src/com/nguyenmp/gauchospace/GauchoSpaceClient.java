@@ -373,7 +373,8 @@ public class GauchoSpaceClient {
 	 * Gets a list of forums that belong under the specified course.
 	 * @param courseID The ID of the course under which these forums belong.
 	 * @param cookies The cookies of the user.
-	 * @return A list of Forums that belong to this Course.
+	 * @return A list of Forums that belong to this Course.  Null if it 
+	 * couldn't be parsed. 
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
