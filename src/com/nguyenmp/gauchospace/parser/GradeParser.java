@@ -27,8 +27,15 @@ import com.nguyenmp.gauchospace.thing.grade.GradeItem;
 
 public class GradeParser {
 	public static GradeFolder getGradeFromHtml(String gradeHtml) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException {
-		Element tBodyElement = getTableBodyElementFromHtmlString(gradeHtml);
-		GradeFolder grades = getGradesFromTBodyElement(tBodyElement);
+		GradeFolder grades = null;
+		
+		try {
+			Element tBodyElement = getTableBodyElementFromHtmlString(gradeHtml);
+			grades = getGradesFromTBodyElement(tBodyElement);
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		
 		return grades;
 	}
 	
