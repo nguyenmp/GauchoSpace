@@ -52,13 +52,12 @@ public class ForumsParser {
 
 	private static Forum getForumFromRow(Element child) throws TransformerException {
 		String string = XMLParser.nodeToString(child);
-		System.out.println(string);
+		
 		int start, end;
 		
 		//Get the forum id
 		start = string.indexOf("?f=") + "?f=".length();
 		end = string.indexOf("\"", start);
-		System.out.println(string.substring(start, end) + start + end);
 		int forumID = Integer.parseInt(string.substring(start, end));
 		
 		//Get the forum's name
@@ -69,7 +68,6 @@ public class ForumsParser {
 		//Get the forum's description
 		start = string.indexOf("\">", end) + "\">".length();
 		end = string.indexOf("</td>", start);
-		System.out.println(string.substring(start, end));
 		String forumDescription = string.substring(start, end);
 		
 		//Get the number of discussions
