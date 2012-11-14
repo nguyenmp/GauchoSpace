@@ -8,7 +8,9 @@
  */
 package com.nguyenmp.gauchospace.thing.grade;
 
-public class GradeItem {
+import java.io.Serializable;
+
+public class GradeItem implements Serializable {
 	private String mName = null;
 	private String mGrade = null;
 	private String mRange = null;

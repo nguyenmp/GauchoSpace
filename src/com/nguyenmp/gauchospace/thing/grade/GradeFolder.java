@@ -8,11 +8,12 @@
  */
 package com.nguyenmp.gauchospace.thing.grade;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class GradeFolder extends GradeItem {
+public class GradeFolder extends GradeItem implements Serializable {
 	private List<GradeItem> mItems = null;
 	private String mGradeName = null;
 	private GradeFolder mParent = null;
