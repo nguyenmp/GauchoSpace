@@ -35,6 +35,10 @@ public class ForumParser {
 		Element page = XMLParser.getChildFromAttribute(body, "id", "page");
 		Element content = XMLParser.getChildFromAttribute(page, "id", "content");
 		Element table = (Element) XMLParser.getChildFromName(content, "table");
+		
+		if (table == null) return new ArrayList<Discussion>();
+		
+		
 		Element tbody = (Element) XMLParser.getChildFromName(table, "tbody");
 		
 		return getListFromTable(tbody);
