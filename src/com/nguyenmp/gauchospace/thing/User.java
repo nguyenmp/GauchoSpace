@@ -86,6 +86,8 @@ public class User implements Comparable<User>, Serializable {
 		private static final long serialVersionUID = -1008048022836907145L;
 		private String key = null;
 		private String value = null;
+		public static final String KEY_CITY = "City/town";
+		public static final String KEY_COUNTRY = "Country";
 		
 		public Attribute(String key, String value) {
 			this.key = key;
