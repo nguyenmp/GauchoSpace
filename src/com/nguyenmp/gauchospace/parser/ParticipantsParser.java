@@ -58,6 +58,7 @@ public class ParticipantsParser {
 
 		String avatarDescription = imageElement.getAttribute("alt");
 		String avatarUrl = imageElement.getAttribute("src");
+		avatarUrl = avatarUrl.replace("f2.jpg", "f1.jpg");
 		
 		//Get name detail
 		Element nameCellElement = XMLParser.getChildFromAttribute(tableRow, "class", "cell c1");
@@ -69,11 +70,11 @@ public class ParticipantsParser {
 		
 		//Get city/town attribute
 		Element cityTownElement = XMLParser.getChildFromAttribute(tableRow, "class", "cell c2");
-		User.Attribute cityTownAttribute = new User.Attribute("City/town", cityTownElement.getTextContent());
+		User.Attribute cityTownAttribute = new User.Attribute(User.Attribute.KEY_CITY, cityTownElement.getTextContent());
 		
 		//get country attribute
 		Element countryElement = XMLParser.getChildFromAttribute(tableRow, "class", "cell c3");
-		User.Attribute countryAttribute = new User.Attribute("Country", countryElement.getTextContent());
+		User.Attribute countryAttribute = new User.Attribute(User.Attribute.KEY_COUNTRY, countryElement.getTextContent());
 		
 		
 		//Generate user object
