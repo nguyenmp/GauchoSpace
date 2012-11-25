@@ -39,7 +39,6 @@ public class UserParser {
 		Element nameElement = (Element) XMLParser.getChildFromName(contentElement, "h2");
 		
 		String name = nameElement.getTextContent();
-		System.out.println("Name: " + name);
 		
 		
 		//Get avatar
@@ -52,8 +51,6 @@ public class UserParser {
 		
 		String avatarUrl = imgElement.getAttribute("src");
 		String avatarDescription = imgElement.getAttribute("alt");
-		System.out.println(avatarUrl);
-		System.out.println(avatarDescription);
 		
 		
 		//Get summary and attributes table
