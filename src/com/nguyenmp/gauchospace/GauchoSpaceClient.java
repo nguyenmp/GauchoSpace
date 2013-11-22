@@ -150,11 +150,6 @@ public class GauchoSpaceClient {
 		HttpClient client = getClient();
 		HttpContext context = getContext(null);
 		
-		//Get pre-cookies
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/login/index.php");
-		client.execute(get, context);
-		get.abort();
-		
 		//Create post
 		HttpPost post = new HttpPost("https://gauchospace.ucsb.edu/courses/login/index.php");
 		
@@ -176,16 +171,8 @@ public class GauchoSpaceClient {
 		}
 		String contentString = coursesHtml.toString();
 
-		post.abort();
-		
-		if (contentString.contains(Constants.loggedInString)) {
-			//Return logged in client's cookies
-			CookieStore cookieStore = getCookies(context);
-			return cookieStore;
-		} else {
-			return null;
-		}
-		
+		System.out.println(contentString);
+		return null;
 	}
 	
 	/**
