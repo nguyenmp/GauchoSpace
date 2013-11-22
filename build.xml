@@ -18,7 +18,7 @@
 
   <target name="compile" description="compile the code">
     <mkdir dir="build" />
-    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source">
+    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false">
       <classpath refid="project.class.path" />
     </javac>
   </target>
