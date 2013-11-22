@@ -3,6 +3,7 @@
   <property environment="env" /> <!-- load the environment variables -->
 
   <property name="mainClass" value="com.nguyenmp.gauchospace.Tester" />
+  <property name="projectName" value="GauchoSpace" />
 
   <path id="project.class.path">
     <pathelement location="build" />
@@ -33,10 +34,6 @@
     <delete failonerror="false" verbose="true">
       <fileset dir="build" includes="**/*.class" />
     </delete>
-    <delete dir="javadoc" quiet="true" />
-    <delete dir="dist" quiet="true" />
-    <delete dir="download" quiet="true" />
-    <delete dir="temp" quiet="true" />
   </target>
 
   <target name="test" depends="compile" description="run junit tests">
