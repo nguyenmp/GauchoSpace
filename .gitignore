@@ -21,3 +21,6 @@ local.properties
 
 # Emacs Backup File
 *~
+
+# Ignore credentials file (DO NOT REMOVE!) Otherwise, passwords would be exposed
+credentials

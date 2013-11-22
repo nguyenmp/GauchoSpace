@@ -11,8 +11,8 @@ public class Credentials {
 
 	private static void init() throws IOException {
 		// the username and password should be stored as the first
-		// and second line in credentials.txt
-		FileReader fReader = new FileReader("credentials.txt");
+		// and second line in credentials
+		FileReader fReader = new FileReader("credentials");
 		BufferedReader reader = new BufferedReader(fReader);
 		mUsername = reader.readLine();
 		mPassword = reader.readLine();
