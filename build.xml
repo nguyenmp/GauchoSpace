@@ -1,1 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project default="compile">
+  <property environment="env" /> <!-- load the environment variables -->
 
+  <property name="mainClass" value="com.nguyenmp.gauchospace.Tester" />
+
+  <path id="project.class.path">
+    <pathelement location="build" />
+    <pathelement location="lib/junit-4.8.2.jar" />
+    <pathelement location="libs/commons-codec-1.6.jar" />
+    <pathelement location="libs/httpmime-4.2.1.jar" />
+    <pathelement location="libs/httpclient-4.2.1.jar" />
+    <pathelement location="libs/tagsoup-1.2.1.jar" />
+    <pathelement location="libs/httpcore-4.2.1.jar" />
+    <pathelement location="libs/httpclient-cache-4.2.1.jar" />
+    <pathelement location="libs/commons-logging-1.1.1.jar" />
+  </path>
+
+  <target name="compile" description="compile the code">
+    <mkdir dir="build" />
+    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source">
+      <classpath refid="project.class.path" />
+    </javac>
+  </target>
+
+  <target name="run" depends="compile" description="run the main">
+    <java classname="${mainClass}">
+      <classpath refid="project.class.path" />
+    </java>
+  </target>
+
+  <target name="clean" description="get rid of unnecessary files">
+    <delete failonerror="false" verbose="true">
+      <fileset dir="build" includes="**/*.class" />
+    </delete>
+    <delete dir="javadoc" quiet="true" />
+    <delete dir="dist" quiet="true" />
+    <delete dir="download" quiet="true" />
+    <delete dir="temp" quiet="true" />
+  </target>
+
+  <target name="test" depends="compile" description="run junit tests">
+    <junit haltonerror="no" haltonfailure="no">
+      <classpath refid="project.class.path" />
+
+      <batchtest fork="yes">
+        <fileset dir="src">
+          <!-- this will pick up every class with a name ending in Test -->
+          <include name="**/*Test.java" />
+          </fileset>
+      </batchtest>
+
+      <formatter type="plain" usefile="false" />
+
+    </junit>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="dist" />
+    <jar destfile="dist/${projectName}.jar" basedir="build">
+      <manifest>
+	<attribute name="Main-Class" value="${mainClass}" />
+      </manifest>
+    </jar>
+  </target>
+
+</project>
