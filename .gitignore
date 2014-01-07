@@ -1,6 +1,8 @@
 # Java class files
 *.class
 *.jar
+
+# Include library files though!
 !libs/*.jar
 
 # Local configuration file (sdk path, etc)
@@ -19,3 +21,6 @@ local.properties
 
 # Emacs Backup File
 *~
+
+# Ignore credentials file (DO NOT REMOVE!) Otherwise, passwords would be exposed
+credentials

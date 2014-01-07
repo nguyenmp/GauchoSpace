@@ -6,28 +6,22 @@
  * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.nguyenmp.gauchospace;
+package com.nguyenmp.gauchospace.test;
 
 import java.io.IOException;
-import java.util.List;
 
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-import com.nguyenmp.gauchospace.thing.Course;
-import org.apache.http.client.CookieStore;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
+import com.nguyenmp.gauchospace.GauchoSpaceClient;
+import com.nguyenmp.gauchospace.Credentials;
 
-import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
-import com.nguyenmp.gauchospace.thing.Forum;
-import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
-import com.nguyenmp.gauchospace.thing.grade.GradeItem;
+public class GauchoSpaceClientTest {
 
-public class Tester {
-	public static void main(String[] args) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException, UnparsableHtmlException{
-		//CookieStore cookies = GauchoSpaceClient.login("username", "password");
-        CookieStore cookies = GauchoSpaceClient.login("un", "pass");
-        List<Course> Cor = GauchoSpaceClient.getCourses(cookies);
+	@Test
+	public void loginTest() throws IOException {
+		String username = Credentials.Username();
+		String password = Credentials.Password();
+		assertEquals(GauchoSpaceClient.login(username, password), null);
 	}
 }
