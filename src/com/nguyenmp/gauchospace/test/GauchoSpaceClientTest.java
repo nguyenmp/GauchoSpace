@@ -11,6 +11,7 @@ package com.nguyenmp.gauchospace.test;
 import java.io.IOException;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import com.nguyenmp.gauchospace.GauchoSpaceClient;
@@ -18,10 +19,17 @@ import com.nguyenmp.gauchospace.Credentials;
 
 public class GauchoSpaceClientTest {
 
-	@Test
-	public void loginTest() throws IOException {
-		String username = Credentials.Username();
-		String password = Credentials.Password();
-		assertNotEquals(GauchoSpaceClient.login(username, password), null);
-	}
+    @Test
+    public void loginTest() throws IOException {
+        String username = Credentials.Username();
+        String password = Credentials.Password();
+        assertNotEquals(GauchoSpaceClient.login(username, password), null);
+    }
+
+    @Test
+    public void loginNullTest() throws IOException {
+        String username = Credentials.Username();
+        String password = Credentials.Password();
+        assertEquals(GauchoSpaceClient.login("penis", "vagina"), null);
+    }
 }
