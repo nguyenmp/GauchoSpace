@@ -27,30 +27,7 @@ import com.nguyenmp.gauchospace.thing.grade.GradeItem;
 public class Tester {
 	public static void main(String[] args) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException, UnparsableHtmlException{
 		//CookieStore cookies = GauchoSpaceClient.login("username", "password");
-        CookieStore cookies = GauchoSpaceClient.login("UN", "PASS");
+        CookieStore cookies = GauchoSpaceClient.login("un", "pass");
         List<Course> Cor = GauchoSpaceClient.getCourses(cookies);
-		//List<Forum> forums = GauchoSpaceClient.getForums(1, cookies);
-//		List<Discussion> discussions = GauchoSpaceClient.getForum(1, cookies);
-		//System.out.println(forums);
-	}
-	
-	private static int indent = 0;
-	private static void printFolder(GradeFolder folder) {
-		printIndent(indent); System.out.println(folder.getTitle());
-		indent++;
-		for (GradeItem item : folder.getItems()) {
-			if (item instanceof GradeFolder) {
-				printFolder((GradeFolder) item);
-			} else {
-				printIndent(indent); System.out.println(item.toString());
-			}
-		}
-		indent--;
-		printIndent(indent); System.out.println(folder.toString());
-	}
-	
-	private static void printIndent(int indent) {
-		for(int i = 0; i < indent; i++) 
-			System.out.print("\t");
 	}
 }
