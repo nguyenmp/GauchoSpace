@@ -181,7 +181,7 @@ public class GauchoSpaceClient {
 		
 		if (contentString.contains(Constants.loggedInString)) {
 			//Return logged in client's cookies
-            System.out.println("logged in string is contained! saving cookie...");
+            //System.out.println("logged in string is contained! saving cookie...");
 			CookieStore cookieStore = getCookies(context);
 			return cookieStore;
 		} else {
@@ -538,7 +538,7 @@ public class GauchoSpaceClient {
 		
 		if (cookies == null){
             cookies = new BasicCookieStore();
-            System.out.println("COOKIE WAS NULL!");
+            //System.out.println("COOKIE WAS NULL!");
         }
 		context.setAttribute(ClientContext.COOKIE_STORE, cookies);
 		

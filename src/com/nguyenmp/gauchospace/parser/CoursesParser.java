@@ -34,20 +34,22 @@ public class CoursesParser {
 	 */
 	public static List<Course> getCoursesFromHtml(String htmlString) throws SAXNotRecognizedException, SAXNotSupportedException, TransformerFactoryConfigurationError, TransformerException {
 		Document doc = XMLParser.getDocumentFromString(htmlString);
-		
-		Element body = (Element) XMLParser.getChildFromName(doc.getDocumentElement(), "body");
-		Element page = XMLParser.getChildFromAttribute(body, "id", "page");
 
-        //System.out.println(page.getTextContent());
+        Element role = doc.getElementById("inst644");
+        System.out.println(role.getTextContent());
 
-        Element content = XMLParser.getChildFromAttribute(page, "id", "content");
-        //no id named "table" TODO  changed from table to section
-		Element table = (Element) XMLParser.getChildFromName(content, "table");
-		Element tr = (Element) XMLParser.getChildFromName(table, "tr");
-		Element middleColumn = XMLParser.getChildFromAttribute(tr, "id", "middle-column");
-		Element div = (Element) XMLParser.getChildFromName(middleColumn, "div");
-		Element unorderedList = (Element) XMLParser.getChildFromName(div, "ul");
-		
+        //Element content = XMLParser.getChildFromAttribute(role, "div", "content");
+        Element classes = (Element) XMLParser.getChildFromName(role, "div");
+        //Element wut = (Element) XMLParser.getChildFromName(classes, "div");
+        Element ra = (Element) XMLParser.getChildFromAttribute(role, "class", "course_list");
+        System.out.println(ra.getTextContent());
+
+		//Element table = (Element) XMLParser.getChildFromName(content, "table");
+		//Element tr = (Element) XMLParser.getChildFromName(table, "tr");
+		//Element middleColumn = XMLParser.getChildFromAttribute(tr, "id", "middle-column");
+		//Element div = (Element) XMLParser.getChildFromName(middleColumn, "div");
+		Element unorderedList = (Element) XMLParser.getChildFromName(classes, "ul");
+
 		List<Course> courses = getCoursesFromUnorderedList(unorderedList);
 
 		return courses;
