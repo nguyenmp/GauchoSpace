@@ -21,7 +21,7 @@ public class Credentials {
 	public static String Username() throws IOException {
 		// If we already loaded a username before, return that!
 		// Otherwise, read a new one
-		if (mUsername != null) init();
+		if (mUsername == null) init();
 
 		return mUsername;
 	}
@@ -29,7 +29,7 @@ public class Credentials {
 	public static String Password() throws IOException {
 		// If we already loaded a password before, return that!
 		// Otherwise, read a new one
-		if (mPassword != null) init();
+		if (mPassword == null) init();
 
 		return mPassword;
 	}
