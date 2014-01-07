@@ -30,9 +30,10 @@ public class ForumsParser {
 		Element body = (Element) XMLParser.getChildFromName(doc.getDocumentElement(), "body");
 		Element page = XMLParser.getChildFromAttribute(body, "id", "page");
 		Element content = XMLParser.getChildFromAttribute(page, "id", "content");
-		Element table = (Element) XMLParser.getChildFromName(content, "table");
-		
-		return getListFromTable(table);
+		//Element table = (Element) XMLParser.getChildFromName(content, "table");
+        Element table = (Element) XMLParser.getChildFromName(content, "role");
+
+        return getListFromTable(table);
 	}
 
 	private static List<Forum> getListFromTable(Element table) throws TransformerException {

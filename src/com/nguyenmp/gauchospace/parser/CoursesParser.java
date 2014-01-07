@@ -37,7 +37,11 @@ public class CoursesParser {
 		
 		Element body = (Element) XMLParser.getChildFromName(doc.getDocumentElement(), "body");
 		Element page = XMLParser.getChildFromAttribute(body, "id", "page");
-		Element content = XMLParser.getChildFromAttribute(page, "id", "content");
+
+        //System.out.println(page.getTextContent());
+
+        Element content = XMLParser.getChildFromAttribute(page, "id", "content");
+        //no id named "table" TODO  changed from table to section
 		Element table = (Element) XMLParser.getChildFromName(content, "table");
 		Element tr = (Element) XMLParser.getChildFromName(table, "tr");
 		Element middleColumn = XMLParser.getChildFromAttribute(tr, "id", "middle-column");
@@ -45,7 +49,7 @@ public class CoursesParser {
 		Element unorderedList = (Element) XMLParser.getChildFromName(div, "ul");
 		
 		List<Course> courses = getCoursesFromUnorderedList(unorderedList);
-		
+
 		return courses;
 	}
 	

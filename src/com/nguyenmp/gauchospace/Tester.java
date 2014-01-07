@@ -14,6 +14,7 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
+import com.nguyenmp.gauchospace.thing.Course;
 import org.apache.http.client.CookieStore;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
@@ -25,10 +26,12 @@ import com.nguyenmp.gauchospace.thing.grade.GradeItem;
 
 public class Tester {
 	public static void main(String[] args) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException, UnparsableHtmlException{
-		CookieStore cookies = GauchoSpaceClient.login("username", "password");
-		List<Forum> forums = GauchoSpaceClient.getForums(1, cookies);
+		//CookieStore cookies = GauchoSpaceClient.login("username", "password");
+        CookieStore cookies = GauchoSpaceClient.login("UN", "PASS");
+        List<Course> Cor = GauchoSpaceClient.getCourses(cookies);
+		//List<Forum> forums = GauchoSpaceClient.getForums(1, cookies);
 //		List<Discussion> discussions = GauchoSpaceClient.getForum(1, cookies);
-		System.out.println(forums);
+		//System.out.println(forums);
 	}
 	
 	private static int indent = 0;

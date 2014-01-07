@@ -84,11 +84,12 @@ public class XMLParser {
 	 * @param attributeValue the value of the attribute
 	 * @return the Element that has the specified value for the specified attribute.
 	 */
-	public static Element getChildFromAttribute(Element root, String attributeName, String attributeValue) {	
+	public static Element getChildFromAttribute(Element root, String attributeName, String attributeValue) {
+        //System.out.println(attributeValue);
 		NodeList list = root.getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node child = list.item(i);
-			
+
 			if (child.getNodeType() == Node.ELEMENT_NODE) {				
 				Element element = (Element) child;
 				if (element.getAttribute(attributeName).equals(attributeValue)) {

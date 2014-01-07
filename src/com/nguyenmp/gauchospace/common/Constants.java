@@ -22,6 +22,6 @@
 package com.nguyenmp.gauchospace.common;
 
 public class Constants {
-	public static final String loggedInString = "<div class=\"headermenu\"><div class=\"logininfo\">You are logged in as <a  href=\"https://gauchospace.ucs";
-	
+	public static final String loggedInString = "<div class=\"logininfo\"><a href=\"https://gauchospace.ucsb.edu/courses/user/profile";
+
 }

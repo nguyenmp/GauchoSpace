@@ -172,6 +172,7 @@ public class GauchoSpaceClient {
 		String line = null;
 		StringBuilder coursesHtml = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
+            //System.out.println(line);
 			coursesHtml.append(line);
 		}
 		String contentString = coursesHtml.toString();
@@ -180,6 +181,7 @@ public class GauchoSpaceClient {
 		
 		if (contentString.contains(Constants.loggedInString)) {
 			//Return logged in client's cookies
+            System.out.println("logged in string is contained! saving cookie...");
 			CookieStore cookieStore = getCookies(context);
 			return cookieStore;
 		} else {
@@ -254,7 +256,7 @@ public class GauchoSpaceClient {
 		HttpContext context = getContext(cookies);
 		
 		//Create GET
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/");
+		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/my/");
 		
 		//Do GET
 		HttpResponse response = client.execute(get, context);
@@ -276,7 +278,7 @@ public class GauchoSpaceClient {
 		
 		//Compile and parse courses
 		List<Course> courses = CoursesParser.getCoursesFromHtml(contentString);
-		
+		System.out.println(courses);
 		//Return the parsed content
 		return courses;
 	}
@@ -534,8 +536,10 @@ public class GauchoSpaceClient {
 	private static HttpContext getContext(CookieStore cookies) {
 		HttpContext context = new BasicHttpContext();;
 		
-		if (cookies == null) cookies = new BasicCookieStore();
-		
+		if (cookies == null){
+            cookies = new BasicCookieStore();
+            System.out.println("COOKIE WAS NULL!");
+        }
 		context.setAttribute(ClientContext.COOKIE_STORE, cookies);
 		
 		return context;
