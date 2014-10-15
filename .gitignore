@@ -1,26 +1,3 @@
-# Java class files
-*.class
-*.jar
-
-# Include library files though!
-!libs/*.jar
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Eclipse project files
-.classpath
-.project
-.settings/
-
-# Intellij project files
+/build
 *.iml
-*.ipr
-*.iws
-.idea/
-
-# Emacs Backup File
-*~
-
-# Ignore credentials file (DO NOT REMOVE!) Otherwise, passwords would be exposed
 credentials
