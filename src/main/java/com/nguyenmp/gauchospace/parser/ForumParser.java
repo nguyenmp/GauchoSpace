@@ -8,27 +8,19 @@
  */
 package com.nguyenmp.gauchospace.parser;
 
+import com.nguyenmp.gauchospace.thing.Discussion;
+import com.nguyenmp.gauchospace.thing.Post;
+import com.nguyenmp.gauchospace.thing.User;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-
-import com.nguyenmp.gauchospace.thing.Discussion;
-import com.nguyenmp.gauchospace.thing.Post;
-import com.nguyenmp.gauchospace.thing.User;
-
 public class ForumParser {
-	public static List<Discussion> getDiscussions(String html) 
-			throws SAXNotRecognizedException, SAXNotSupportedException, 
-			IOException, TransformerFactoryConfigurationError, TransformerException {
+	public static List<Discussion> getDiscussions(String html) throws IOException, XMLException {
 		Document doc = XMLParser.getDocumentFromString(html);
 		
 		Element body = (Element) XMLParser.getChildFromName(doc.getDocumentElement(), "body");
@@ -36,7 +28,7 @@ public class ForumParser {
 		Element content = XMLParser.getChildFromAttribute(page, "id", "content");
 		Element table = (Element) XMLParser.getChildFromName(content, "table");
 		
-		if (table == null) return new ArrayList<Discussion>();
+		if (table == null) return new ArrayList<>();
 		
 		
 		Element tbody = (Element) XMLParser.getChildFromName(table, "tbody");
@@ -44,8 +36,8 @@ public class ForumParser {
 		return getListFromTable(tbody);
 	}
 
-	private static List<Discussion> getListFromTable(Element table) throws TransformerException {
-		List<Discussion> discussions = new ArrayList<Discussion>();
+	private static List<Discussion> getListFromTable(Element table) throws XMLException {
+		List<Discussion> discussions = new ArrayList<>();
 		
 		for (int i = 0; i < table.getChildNodes().getLength(); i++) {
 			discussions.add(getDiscussionFromRow(table.getChildNodes().item(i)));
@@ -54,7 +46,7 @@ public class ForumParser {
 		return discussions;
 	}
 
-	private static Discussion getDiscussionFromRow(Node item) throws TransformerException {
+	private static Discussion getDiscussionFromRow(Node item) throws XMLException {
 		String string = XMLParser.nodeToString(item);
 		
 		int start, end;
@@ -133,7 +125,6 @@ public class ForumParser {
 		Post lastPost = new Post(postID, timestamp, lastPostUser, null);
 		
 		//Compile the scraped data and return it
-		Discussion discussion = new Discussion(title, user, replies, lastPost, id);
-		return discussion;
+		return new Discussion(title, user, replies, lastPost, id);
 	}
 }

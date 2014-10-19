@@ -22,12 +22,8 @@ public class UserParser {
 	 * 
 	 * @param htmlString
 	 * @return Scrapes user data from the html of a user's profile page
-	 * @throws SAXNotRecognizedException If the feature value can't be assigned or retrieved.
-	 * @throws SAXNotSupportedException When the XMLReader recognizes the feature name but cannot set the requested value.
-	 * @throws TransformerFactoryConfigurationError Thrown if the implementation is not available or cannot be instantiated.
-	 * @throws TransformerException When it is not possible to create a Transformer instance or if an unrecoverable error occurs during the course of the transformation.
 	 */
-	public static User getUserFromHtml(String htmlString) throws SAXNotRecognizedException, SAXNotSupportedException, TransformerFactoryConfigurationError, TransformerException {
+	public static User getUserFromHtml(String htmlString) throws XMLException {
 		Document doc = XMLParser.getDocumentFromString(htmlString);
 		
 		Element docElement = doc.getDocumentElement();
@@ -58,7 +54,7 @@ public class UserParser {
 		
 		Node attributesTableNode = XMLParser.getChildFromAttribute(tdContentElement, "class", "list");
 		Node hrNode = XMLParser.getChildFromName(tdContentElement, "hr");
-		
+
 		Element summaryElement = tdContentElement;
 		if (attributesTableNode != null) summaryElement.removeChild(attributesTableNode);
 		if (hrNode != null) summaryElement.removeChild(hrNode);
@@ -80,7 +76,7 @@ public class UserParser {
 	}
 	
 	private static List<Attribute> getMapFromTable(Element tableNode) {
-		List<Attribute> attributes = new ArrayList<Attribute>();
+		List<Attribute> attributes = new ArrayList<>();
 		NodeList children = tableNode.getChildNodes();
 		
 		for (int index = 0; index < children.getLength(); index++) {
@@ -103,9 +99,6 @@ public class UserParser {
 		String value = valueElement.getTextContent();
 		
 		//Create the attribute object from the key and value
-		Attribute attribute = new Attribute(key, value);
-		
-		//return generated attribute
-		return attribute;
+		return new Attribute(key, value);
 	}
 }

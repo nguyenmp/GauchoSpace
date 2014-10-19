@@ -1,12 +1,7 @@
 package com.nguyenmp.gauchospace.parser;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
+import com.nguyenmp.gauchospace.thing.Resource;
+import com.nguyenmp.gauchospace.thing.Week;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,23 +9,24 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
-import com.nguyenmp.gauchospace.thing.Resource;
-import com.nguyenmp.gauchospace.thing.Week;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WeeklyOutlineParser {
 	
 	
-	public static List<Week> getWeeklyOutlineFromHtml(String htmlString) throws TransformerFactoryConfigurationError, SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerException, UnparsableHtmlException {
+	public static List<Week> getWeeklyOutlineFromHtml(String htmlString) throws XMLException {
 		Element middleColumn = getColumnFromHtml(htmlString, WeeklyOutlineParser.COLUMN_MIDDLE);
-		List<Week> weeklyOutline = getCalendarFromMiddleColumn(middleColumn);
-		
-		return weeklyOutline;
+		return getCalendarFromMiddleColumn(middleColumn);
 	}
 	
 	public static final int COLUMN_LEFT = 0;
 	public static final int COLUMN_MIDDLE = 1;
 	public static final int COLUMN_RIGHT = 2;
-	private static Element getColumnFromHtml(String htmlString, int column_id) throws TransformerFactoryConfigurationError, SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerException, UnparsableHtmlException {
+	private static Element getColumnFromHtml(String htmlString, int column_id) throws XMLException {
 			Document doc = XMLParser.getDocumentFromString(htmlString);
 			
 			Element docElement = doc.getDocumentElement();
@@ -60,14 +56,13 @@ public class WeeklyOutlineParser {
 				columnId = "right-column";
 				break;
 			default:
-				throw new UnparsableHtmlException("Must have proper column specified");
+				throw new XMLException("Must have proper column specified");
 			}
 			
-			Element column =  XMLParser.getChildFromAttribute(tr, "id", columnId);
-			return column;
+			return XMLParser.getChildFromAttribute(tr, "id", columnId);
 		}
 
-	private static List<Week> getCalendarFromMiddleColumn(Element middleColumn) throws TransformerException {
+	private static List<Week> getCalendarFromMiddleColumn(Element middleColumn) throws XMLException {
 		List<Week> calendar = new ArrayList<Week>();
 
 		Element div =  (Element) XMLParser.getChildFromName(middleColumn, "div");
@@ -86,7 +81,7 @@ public class WeeklyOutlineParser {
 		return calendar;
 	}
 	
-	private static Week getWeekFromTableRow(Element tableRow) throws TransformerException {
+	private static Week getWeekFromTableRow(Element tableRow) throws XMLException {
 		//These are the datas that are needed to initialize the Week object
 		boolean current = false;
 		String weekdates = null, summary = null;

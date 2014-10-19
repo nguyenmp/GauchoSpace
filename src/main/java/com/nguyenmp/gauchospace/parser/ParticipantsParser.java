@@ -1,46 +1,35 @@
 package com.nguyenmp.gauchospace.parser;
 
+import com.nguyenmp.gauchospace.thing.User;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-
-import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
-import com.nguyenmp.gauchospace.thing.User;
-
 public class ParticipantsParser {
 	
 	
-	public static List<User> getParticipantsFromHtml(String htmlString) throws TransformerFactoryConfigurationError, SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerException, UnparsableHtmlException {
+	public static List<User> getParticipantsFromHtml(String htmlString) throws IOException, XMLException {
 		Element tableElement = getTableFromHtml(htmlString);
-		List<User> weeklyOutline = getParticipantsFromTable(tableElement);
-//		List<User> weeklyOutline = null;
-		return weeklyOutline;
+		return getParticipantsFromTable(tableElement);
 	}
 	
-	private static Element getTableFromHtml(String htmlString) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException {
+	private static Element getTableFromHtml(String htmlString) throws IOException, XMLException {
 		Document document = XMLParser.getDocumentFromString(htmlString);
 		Element documentElement = document.getDocumentElement();
 		Element bodyElement = (Element) XMLParser.getChildFromName(documentElement, "body");
 		Element pageElement = XMLParser.getChildFromAttribute(bodyElement, "id", "page");
 		Element contentElement = XMLParser.getChildFromAttribute(pageElement, "id", "content");
 		
-		Element participantElement = XMLParser.getChildFromAttribute(contentElement, "id", "participants");
-		
-		return participantElement;
+		return XMLParser.getChildFromAttribute(contentElement, "id", "participants");
 	}
 	
-	private static List<User> getParticipantsFromTable(Element tableElement) throws TransformerException {
+	private static List<User> getParticipantsFromTable(Element tableElement) throws XMLException {
 		NodeList children = tableElement.getChildNodes();
-		List<User> participants = new ArrayList<User>();
+		List<User> participants = new ArrayList<>();
 		
 		//Ignore the first row because it is just headers
 		for (int index = 1; index < children.getLength(); index++) {

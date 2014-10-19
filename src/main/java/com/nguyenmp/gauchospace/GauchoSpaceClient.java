@@ -8,50 +8,31 @@
  */
 package com.nguyenmp.gauchospace;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
+import com.nguyenmp.gauchospace.parser.*;
+import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
+import com.nguyenmp.gauchospace.thing.*;
+import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
-import com.nguyenmp.gauchospace.common.Constants;
-import com.nguyenmp.gauchospace.parser.CoursesParser;
-import com.nguyenmp.gauchospace.parser.ForumParser;
-import com.nguyenmp.gauchospace.parser.ForumsParser;
-import com.nguyenmp.gauchospace.parser.GradeParser;
-import com.nguyenmp.gauchospace.parser.ParticipantsParser;
-import com.nguyenmp.gauchospace.parser.UserParser;
-import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser;
-import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
-import com.nguyenmp.gauchospace.thing.Course;
-import com.nguyenmp.gauchospace.thing.Discussion;
-import com.nguyenmp.gauchospace.thing.Forum;
-import com.nguyenmp.gauchospace.thing.User;
-import com.nguyenmp.gauchospace.thing.Week;
-import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * A Java class that interfaces with the HTML frontend of GauchoSpace.
@@ -71,7 +52,7 @@ public class GauchoSpaceClient {
 	 * @throws TransformerFactoryConfigurationError Thrown if the implementation is not available or cannot be instantiated.
 	 * @throws TransformerException When it is not possible to create a Transformer instance or if an unrecoverable error occurs during the course of the transformation.
 	 */
-	public static User getUserProfile(String url, CookieStore cookies) throws ClientProtocolException, IOException, SAXNotRecognizedException, SAXNotSupportedException, TransformerFactoryConfigurationError, TransformerException {
+	public static User getUserProfile(String url, CookieStore cookies) throws IOException, XMLException {
 		//Create httpclient and context from cookies
 		HttpClient client = getClient();
 		HttpContext context = getContext(cookies);
@@ -102,56 +83,8 @@ public class GauchoSpaceClient {
 		
 		return user;
 	}
-	
-	/**
-	 * Gets the Courses of the user who owns the cookies.
-	 * @param cookies The cookies of a logged in session.
-	 * @return The list of courses 
-	 * @throws IOException in case of a problem or the connection was aborted, 
-	 * if the stream could not be created, or if an I/O error occured
-	 * @throws SAXNotRecognizedException If the feature value can't be 
-	 * assigned or retrieved.
-	 * @throws SAXNotSupportedException When the XMLReader recognizes 
-	 * the feature name but cannot set the requested value.
-	 * @throws TransformerFactoryConfigurationError Thrown if the 
-	 * implementation is not available or cannot be instantiated.
-	 * @throws TransformerException When it is not possible to create 
-	 * a Transformer instance or if an unrecoverable error occurs 
-	 * during the course of the transformation.
-	 */
-	public static List<Course> getCourses(CookieStore cookies) throws ClientProtocolException, IOException, SAXNotRecognizedException, SAXNotSupportedException, TransformerFactoryConfigurationError, TransformerException {
-		//Create client and context
-		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
-		
-		//Create GET
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/my/");
-		
-		//Do GET
-		HttpResponse response = client.execute(get, context);
-		
-		//Get content of response
-		HttpEntity entity = response.getEntity();
-		
-		//Read content
-		BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-		String line = null;
-		StringBuilder coursesHtml = new StringBuilder();
-		while ((line = reader.readLine()) != null) {
-			coursesHtml.append(line);
-		}
-		String contentString = coursesHtml.toString();
-		
-		//Close connection
-		get.abort();
-		
-		//Compile and parse courses
-		List<Course> courses = CoursesParser.getCoursesFromHtml(contentString);
-		System.out.println(courses);
-		//Return the parsed content
-		return courses;
-	}
-	public static List<User> getParticipantsFromCourse(int courseId, CookieStore cookies) throws ClientProtocolException, IOException, SAXNotRecognizedException, SAXNotSupportedException, TransformerFactoryConfigurationError, TransformerException, UnparsableHtmlException {
+
+	public static List<User> getParticipantsFromCourse(int courseId, CookieStore cookies) throws IOException, XMLException {
 		//Create client and context
 		HttpClient client = getClient();
 		HttpContext context = getContext(cookies);
@@ -180,12 +113,10 @@ public class GauchoSpaceClient {
 		
 		//Parse html and scrape participants
 		String participantsHtmlString = participantsHtml.toString();
-		List<User> participants = ParticipantsParser.getParticipantsFromHtml(participantsHtmlString);
-		
-		return participants;
+		return ParticipantsParser.getParticipantsFromHtml(participantsHtmlString);
 	}
 	
-	public static List<Week> getWeeklyOutlineFromCourse(int courseId, CookieStore cookies) throws TransformerFactoryConfigurationError, IOException, SAXNotRecognizedException, SAXNotSupportedException, TransformerException, com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException {
+	public static List<Week> getWeeklyOutlineFromCourse(int courseId, CookieStore cookies) throws XMLException, IOException, com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException {
 		//Create client and context
 		HttpClient client = getClient();
 		HttpContext context = getContext(cookies);
@@ -205,15 +136,12 @@ public class GauchoSpaceClient {
 		
 		//Close connection
 		get.abort();
-		
+
 		//Compile and parse courses
-		List<Week> calendar = WeeklyOutlineParser.getWeeklyOutlineFromHtml(courseHtml);
-		
-		//Return the parsed content
-		return calendar;
+		return WeeklyOutlineParser.getWeeklyOutlineFromHtml(courseHtml);
 	}
 	
-	public static GradeFolder getGrade(int courseId, CookieStore cookies) throws IOException, SAXNotRecognizedException, SAXNotSupportedException, TransformerFactoryConfigurationError, TransformerException {
+	public static GradeFolder getGrade(int courseId, CookieStore cookies) throws IOException, XMLException {
 		//Create client and context
 		HttpClient client = getClient();
 		HttpContext context = getContext(cookies);
@@ -234,10 +162,7 @@ public class GauchoSpaceClient {
 		get.abort();
 		
 		//Compile and parse courses
-		GradeFolder grade = GradeParser.getGradeFromHtml(courseHtml);
-		
-		//Return the parsed content
-		return grade;
+		return GradeParser.getGradeFromHtml(courseHtml);
 	}
 	
 	/**
@@ -273,13 +198,7 @@ public class GauchoSpaceClient {
 		
 		try {
 			forums = ForumsParser.getForums(forumsHtml);
-		} catch (SAXNotRecognizedException e) {
-			e.printStackTrace();
-		} catch (SAXNotSupportedException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
+		} catch (XMLException e) {
 			e.printStackTrace();
 		}
 		
@@ -318,13 +237,7 @@ public class GauchoSpaceClient {
 		
 		try {
 			discussions = ForumParser.getDiscussions(forumHtml);
-		} catch (SAXNotRecognizedException e) {
-			e.printStackTrace();
-		} catch (SAXNotSupportedException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
+		} catch (XMLException e) {
 			e.printStackTrace();
 		}
 		

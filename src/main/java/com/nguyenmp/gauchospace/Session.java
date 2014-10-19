@@ -1,6 +1,9 @@
 package com.nguyenmp.gauchospace;
 
 import com.nguyenmp.gauchospace.common.Constants;
+import com.nguyenmp.gauchospace.parser.CoursesParser;
+import com.nguyenmp.gauchospace.parser.XMLException;
+import com.nguyenmp.gauchospace.thing.Course;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -13,7 +16,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -128,6 +135,46 @@ public class Session {
         client.getConnectionManager().shutdown();
 
         return !isLoggedIn();
+    }
+
+    /**
+     * Gets the Courses of the user who owns the cookies.
+     * @return The list of courses
+     * @throws IOException in case of a problem or the connection was aborted,
+     * if the stream could not be created, or if an I/O error occured
+     * @throws XMLException if the XML could not be parsed
+     */
+    public List<Course> getCourses() throws IOException, XMLException {
+        //Create client and context
+        HttpClient client = GauchoSpaceClient.getClient();
+        HttpContext context = GauchoSpaceClient.getContext(cookies);
+
+        //Create GET
+        HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/my/");
+
+        //Do GET
+        HttpResponse response = client.execute(get, context);
+
+        //Get content of response
+        HttpEntity entity = response.getEntity();
+
+        //Read content
+        BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
+        String line = null;
+        StringBuilder coursesHtml = new StringBuilder();
+        while ((line = reader.readLine()) != null) {
+            coursesHtml.append(line);
+        }
+        String contentString = coursesHtml.toString();
+
+        //Close connection
+        get.abort();
+
+        //Compile and parse courses
+        List<Course> courses = CoursesParser.getCoursesFromHtml(contentString);
+        System.out.println(courses);
+        //Return the parsed content
+        return courses;
     }
 
     /**

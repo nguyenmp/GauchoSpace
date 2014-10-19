@@ -8,23 +8,17 @@
  */
 package com.nguyenmp.gauchospace.parser;
 
+import com.nguyenmp.gauchospace.thing.Forum;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-
-import com.nguyenmp.gauchospace.thing.Forum;
-
 public class ForumsParser {
-	public static List<Forum> getForums(String html) throws SAXNotRecognizedException, SAXNotSupportedException, IOException, TransformerFactoryConfigurationError, TransformerException {
+	public static List<Forum> getForums(String html) throws IOException, XMLException {
 		Document doc = XMLParser.getDocumentFromString(html);
 		
 		Element body = (Element) XMLParser.getChildFromName(doc.getDocumentElement(), "body");
@@ -36,8 +30,8 @@ public class ForumsParser {
         return getListFromTable(table);
 	}
 
-	private static List<Forum> getListFromTable(Element table) throws TransformerException {
-		List<Forum> list = new ArrayList<Forum>();
+	private static List<Forum> getListFromTable(Element table) throws XMLException {
+		List<Forum> list = new ArrayList<>();
 		
 		NodeList children = table.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
@@ -51,7 +45,7 @@ public class ForumsParser {
 		return list;
 	}
 
-	private static Forum getForumFromRow(Element child) throws TransformerException {
+	private static Forum getForumFromRow(Element child) throws XMLException {
 		String string = XMLParser.nodeToString(child);
 		
 		int start, end;
