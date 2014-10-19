@@ -58,137 +58,6 @@ import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
  * @author Mark Nguyen
  */
 public class GauchoSpaceClient {
-	/**
-	 * Verifies whether or not the user is logged in at the moment.  This is compatible 
-	 * with session time outs as well as regular log outs.
-	 * @param cookie The cookie of the specified user.
-	 * @return True of the cookies are valid, false if they are expired or invalid.
-	 * @throws ClientProtocolException in case of an http protocol error
-	 * @throws IOException in case of a problem or the connection was aborted or if an I/O error occurs.
-	 */
-	public static boolean isLoggedIn(CookieStore cookie) throws ClientProtocolException, IOException {
-		HttpClient client = getClient();
-		HttpContext context = getContext(cookie);
-
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/");
-		
-		HttpResponse response = client.execute(get, context);
-		
-		String httpResponse = getStringFromEntity(response.getEntity());
-		
-		//Clean up
-		get.abort();
-		client.getConnectionManager().shutdown();
-		
-		boolean isLoggedIn = httpResponse.contains(Constants.loggedInString);
-		
-		return isLoggedIn;
-	}
-	
-	/**
-	 * Logs the owner of the cookies out.  If the cookies are invalid, nothing is done. 
-	 * @param cookies The cookies representing the user's current session.  must not be null.
-	 * @return true if cookies are invalid now. false if they are still valid
-	 * @throws ClientProtocolException in case of an http protocol error
-	 * @throws IOException in case of a problem or the connection was aborted or if an I/O error occurs
-	 */
-	public static boolean logout(CookieStore cookies) throws ClientProtocolException, IOException {
-		if (isLoggedIn(cookies) == false) return true;
-		
-		String sessionKey = getSessionKey(cookies);
-		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
-		
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/login/logout.php?sesskey=" + sessionKey);
-		
-		client.execute(get, context);
-		
-		//Cleanup
-		get.abort();
-		client.getConnectionManager().shutdown();
-		
-		return !isLoggedIn(cookies);
-	}
-	
-	/**
-	 * Returns the session key from the cookies.  The session key is used for 
-	 * many data-altering actions with Moodle/GauchoSpace.
-	 * @param cookies must be valid cookies that represent the currently logged in user.
-	 * @return A string representation of the Session Key.  null if the session key could not be found.
-	 * @throws ClientProtocolException in case of an http protocol error
-	 * @throws IOException in case of a problem or the connection was aborted or if an I/O error occurs.
-	 */
-	private static String getSessionKey(CookieStore cookies) throws ClientProtocolException, IOException {
-		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
-		
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/");
-		
-		HttpResponse response = client.execute(get, context);
-		
-		String htmlString = getStringFromEntity(response.getEntity());
-		get.abort();
-		client.getConnectionManager().shutdown();
-		int start = htmlString.indexOf("href=\"https://gauchospace.ucsb.edu/courses/login/logout.php?sesskey=") + "href=\"https://gauchospace.ucsb.edu/courses/login/logout.php?sesskey=".length();
-		int end = htmlString.indexOf("\">Logout</a>");
-		
-		String sessionKey = null;
-		if (start >=0 && end <= htmlString.length() && start <= end) sessionKey = htmlString.substring(start, end);
-		return sessionKey;
-	}
-	
-	/**
-	 * Logs into GauchoSpace with the given credentials.
-	 * @param username the username of the user to log in.
-	 * @param password the password of the user to log in.
-	 * @return The CookieStore that represents the logged-in session of the user or null if login failed
-	 * @throws ClientProtocolException in case of an http protocol error
-	 * @throws IOException in case of a problem or the connection was aborted or if an I/O error occurs.
-	 * @throws UnsupportedEncodingException if the default encoding isn't supported
-	 */
-	public static CookieStore login(String username, String password) throws ClientProtocolException, IOException, UnsupportedEncodingException {
-		HttpClient client = getClient();
-		HttpContext context = getContext(null);
-		
-		//Get pre-cookies
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/login/index.php");
-		client.execute(get, context);
-		get.abort();
-		
-		//Create post
-		HttpPost post = new HttpPost("https://gauchospace.ucsb.edu/courses/login/index.php");
-		
-		//Set post
-		post.setEntity(getBody(username, password));
-		
-		//Get response
-		HttpResponse response = client.execute(post, context);
-
-		//Get the entity of the response
-		HttpEntity entity = response.getEntity();
-		
-		//Get content of response
-		BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-		String line = null;
-		StringBuilder coursesHtml = new StringBuilder();
-		while ((line = reader.readLine()) != null) {
-            //System.out.println(line);
-			coursesHtml.append(line);
-		}
-		String contentString = coursesHtml.toString();
-
-		post.abort();
-		
-		if (contentString.contains(Constants.loggedInString)) {
-			//Return logged in client's cookies
-            //System.out.println("logged in string is contained! saving cookie...");
-			CookieStore cookieStore = getCookies(context);
-			return cookieStore;
-		} else {
-			return null;
-		}
-		
-	}
 	
 	/**
 	 * Retrieves the details of a user
@@ -470,7 +339,7 @@ public class GauchoSpaceClient {
 	 * @return The String representation of the content of the entity.
 	 * @throws IOException  If an I/O error occurs
 	 */
-	private static String getStringFromEntity(HttpEntity entity) throws IOException {
+	protected static String getStringFromEntity(HttpEntity entity) throws IOException {
 		//Read content
 		BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
 		String line = null;
@@ -483,27 +352,10 @@ public class GauchoSpaceClient {
 	}
 	
 	/**
-	 * Creates and initializes a UrlEncodedFormEntity containing the login 
-	 * information.
-	 * @param username the username to put in the entity.
-	 * @param password the password to put into the entity.
-	 * @return the UrlEncodedFormEntity that will contain the username, password, and testcookie set to 1.
-	 * @throws UnsupportedEncodingException if the default encoding isn't supported
-	 */
-	private static UrlEncodedFormEntity getBody(String username, String password) throws UnsupportedEncodingException {
-		List<NameValuePair> args = new ArrayList<NameValuePair>();
-		args.add(new BasicNameValuePair("username", username));
-		args.add(new BasicNameValuePair("password", password));
-		args.add(new BasicNameValuePair("testcookies", "1"));
-		
-		return new UrlEncodedFormEntity(args);
-	}
-	
-	/**
 	 * Creates an HttpClient that with a UserAgent equal to "GauchoSpaceClient by Mark Nguyen @ mpnguyen@umail.ucsb.edu".
 	 * @return An HttpClient with the preset user-agent.
 	 */
-	private static HttpClient getClient() {
+	protected static HttpClient getClient() {
 		//Create client
 		HttpClient client = new DefaultHttpClient();
 		
@@ -514,26 +366,11 @@ public class GauchoSpaceClient {
 	}
 	
 	/**
-	 * Extracts the CookieStore from an HttpContext.
-	 * @param context The HttpContext to extract the CookieStore from
-	 * @return The CookieStore in the HttpContext.  null if there is no CookieStore or 
-	 * the COOKIE_STORE attribute doesn't contain a compatable CookieStore object.
-	 */
-	private static CookieStore getCookies(HttpContext context) {
-		Object attribute = context.getAttribute(ClientContext.COOKIE_STORE);
-		
-		if (attribute instanceof CookieStore) 
-			return (CookieStore) attribute;
-		
-		else return null;
-	}
-	
-	/**
 	 * Creates an HttpContext that contains the cookies given.
 	 * @param cookies The cookies that the context will contain
 	 * @return The HttpContext containing the given CookeiStore
 	 */
-	private static HttpContext getContext(CookieStore cookies) {
+	protected static HttpContext getContext(CookieStore cookies) {
 		HttpContext context = new BasicHttpContext();;
 		
 		if (cookies == null){
