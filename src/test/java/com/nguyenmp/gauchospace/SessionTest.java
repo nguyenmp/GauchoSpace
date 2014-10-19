@@ -42,6 +42,8 @@ public class SessionTest {
 
         Session session = new Session(username, password);
         assertNotNull(session.getCourses());
+
+        // TODO: We could do validation on the courses too
     }
 
     @Test(expected = IllegalArgumentException.class)
