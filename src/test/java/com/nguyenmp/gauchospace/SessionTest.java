@@ -1,6 +1,7 @@
 package com.nguyenmp.gauchospace;
 
 import com.nguyenmp.gauchospace.thing.Course;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.junit.Test;
 
@@ -9,6 +10,24 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 public class SessionTest {
+
+    @Test
+    public void testCookieStoreConstructor() throws Exception {
+        // Load credentials from stupid store
+        String username = Credentials.Username();
+        String password = Credentials.Password();
+
+        Session session = new Session(username, password);
+        assertTrue(session.isLoggedIn());
+
+        CookieStore cookies = session.getCookies();
+        Session session2 = new Session(cookies);
+        assertTrue(session2.isLoggedIn());
+
+        session.logout();
+        assertFalse(session.isLoggedIn());
+        assertFalse(session2.isLoggedIn());
+    }
 
     @Test
     public void testLoginLogout() throws Exception {

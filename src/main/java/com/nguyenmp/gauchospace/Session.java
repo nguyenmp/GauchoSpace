@@ -27,6 +27,11 @@ import java.util.List;
 public class Session {
     private final CookieStore cookies;
 
+    public Session(CookieStore cookies) throws IOException {
+        this.cookies = cookies;
+        if (!isLoggedIn()) throw new IllegalStateException("The cookies provided are no longer valid.");
+    }
+
     /**
      * Logs into GauchoSpace with the given credentials.
      * @param username the username of the user to log in.
@@ -178,6 +183,13 @@ public class Session {
 
         //Compile and parse courses
         return CoursesParser.getCoursesFromHtml(contentString);
+    }
+
+    /**
+     * @return the cookies that represent the current session of this user
+     */
+    public CookieStore getCookies() {
+        return cookies;
     }
 
     /**
