@@ -9,11 +9,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 
@@ -27,10 +27,6 @@ import java.util.List;
 public class Session {
     private final CookieStore cookies;
 
-    public Session(CookieStore cookies) {
-        this.cookies = cookies;
-    }
-
     /**
      * Logs into GauchoSpace with the given credentials.
      * @param username the username of the user to log in.
@@ -41,7 +37,7 @@ public class Session {
      * @throws java.lang.IllegalArgumentException if the credentials did not result in a successful login
      */
     public Session(String username, String password) throws IOException, IllegalArgumentException {
-        HttpClient client = GauchoSpaceClient.getClient();
+        CloseableHttpClient client = GauchoSpaceClient.getClient();
         HttpContext context = GauchoSpaceClient.getContext(null);
 
         //Get pre-cookies
@@ -72,6 +68,7 @@ public class Session {
         String contentString = coursesHtml.toString();
 
         post.abort();
+        client.close();
 
         if (contentString.contains(Constants.loggedInString)) {
             //Return logged in client's cookies
@@ -93,7 +90,7 @@ public class Session {
         // Can't be logged in with no cookies!
         if (cookies == null) return true;
 
-        HttpClient client = GauchoSpaceClient.getClient();
+        CloseableHttpClient client = GauchoSpaceClient.getClient();
         HttpContext context = GauchoSpaceClient.getContext(cookies);
 
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/");
@@ -104,7 +101,7 @@ public class Session {
 
         //Clean up
         get.abort();
-        client.getConnectionManager().shutdown();
+        client.close();
 
         return httpResponse.contains(Constants.loggedInString);
     }
@@ -119,7 +116,7 @@ public class Session {
         if (!isLoggedIn()) return true;
 
         String sessionKey = getSessionKey();
-        HttpClient client = GauchoSpaceClient.getClient();
+        CloseableHttpClient client = GauchoSpaceClient.getClient();
         HttpContext context = GauchoSpaceClient.getContext(cookies);
 
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/login/logout.php?sesskey=" + sessionKey);
@@ -128,7 +125,7 @@ public class Session {
 
         //Cleanup
         get.abort();
-        client.getConnectionManager().shutdown();
+        client.close();
 
         return !isLoggedIn();
     }
@@ -142,7 +139,7 @@ public class Session {
      */
     public Course[] getCourses() throws IOException, XMLException {
         //Create client and context
-        HttpClient client = GauchoSpaceClient.getClient();
+        CloseableHttpClient client = GauchoSpaceClient.getClient();
         HttpContext context = GauchoSpaceClient.getContext(cookies);
 
         //Create GET
@@ -165,6 +162,7 @@ public class Session {
 
         //Close connection
         get.abort();
+        client.close();
 
         //Compile and parse courses
         return CoursesParser.getCoursesFromHtml(contentString);
@@ -178,7 +176,7 @@ public class Session {
      * @throws IOException in case of a problem or the connection was aborted or if an I/O error occurs.
      */
     private String getSessionKey() throws IOException {
-        HttpClient client = GauchoSpaceClient.getClient();
+        CloseableHttpClient client = GauchoSpaceClient.getClient();
         HttpContext context = GauchoSpaceClient.getContext(cookies);
 
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/");
@@ -187,7 +185,7 @@ public class Session {
 
         String htmlString = GauchoSpaceClient.getStringFromEntity(response.getEntity());
         get.abort();
-        client.getConnectionManager().shutdown();
+        client.close();
         int start = htmlString.indexOf("href=\"https://gauchospace.ucsb.edu/courses/login/logout.php?sesskey=") + "href=\"https://gauchospace.ucsb.edu/courses/login/logout.php?sesskey=".length();
         int end = htmlString.indexOf("\">Logout</a>");
 

@@ -22,8 +22,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.xml.sax.SAXNotRecognizedException;
@@ -49,13 +49,10 @@ public class GauchoSpaceClient {
 	 * @return a User object containing the scraped data
 	 * @throws ClientProtocolException in case of an http protocol error
 	 * @throws IOException in case of a problem or the connection was aborted
-	 * @throws SAXNotRecognizedException If the feature value can't be assigned or retrieved.
-	 * @throws SAXNotSupportedException When the XMLReader recognizes the feature name but cannot set the requested value.
-	 * @throws TransformerFactoryConfigurationError Thrown if the implementation is not available or cannot be instantiated.
-	 * @throws TransformerException When it is not possible to create a Transformer instance or if an unrecoverable error occurs during the course of the transformation.
+     * @throws XMLException XML could not be parsed
 	 */
 	public static User getUserProfile(String url, CookieStore cookies) throws IOException, XMLException {
-		//Create httpclient and context from cookies
+		//Create http client and context from cookies
 		HttpClient client = getClient();
 		HttpContext context = getContext(cookies);
 		
@@ -81,10 +78,8 @@ public class GauchoSpaceClient {
 		get.abort();
 		
 		//Process html string to User object
-		User user = UserParser.getUserFromHtml(contentString);
-		
-		return user;
-	}
+		return UserParser.getUserFromHtml(contentString);
+    }
 
 	public static List<User> getParticipantsFromCourse(int courseId, CookieStore cookies) throws IOException, XMLException {
 		//Create client and context
@@ -104,7 +99,7 @@ public class GauchoSpaceClient {
 		
 		//Read content
 		BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-		String line = null;
+		String line;
 		StringBuilder participantsHtml = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
 			participantsHtml.append(line);
@@ -215,7 +210,7 @@ public class GauchoSpaceClient {
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public static List<Discussion> getForum(int forumID, CookieStore cookies) throws ClientProtocolException, IOException {
+	public static List<Discussion> getForum(int forumID, CookieStore cookies) throws IOException {
 		//Create client and context
 		HttpClient client = getClient();
 		HttpContext context = getContext(cookies);
@@ -257,7 +252,7 @@ public class GauchoSpaceClient {
 	protected static String getStringFromEntity(HttpEntity entity) throws IOException {
 		//Read content
 		BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-		String line = null;
+		String line;
 		StringBuilder stringBuilder = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
 			stringBuilder.append(line);
@@ -270,14 +265,11 @@ public class GauchoSpaceClient {
 	 * Creates an HttpClient that with a UserAgent equal to "GauchoSpaceClient by Mark Nguyen @ mpnguyen@umail.ucsb.edu".
 	 * @return An HttpClient with the preset user-agent.
 	 */
-	protected static HttpClient getClient() {
+	protected static CloseableHttpClient getClient() {
 		//Create client
-		HttpClient client = new DefaultHttpClient();
-		
-		//Set useragent
-		HttpProtocolParams.setUserAgent(client.getParams(), "GauchoSpaceClient by Mark Nguyen @ mpnguyen@umail.ucsb.edu");
-		
-		return client;
+        return HttpClients.custom()
+                .setUserAgent("GauchoSpaceClient by Mark Nguyen @ mpnguyen@umail.ucsb.edu")
+                .build();
 	}
 	
 	/**
