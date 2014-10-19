@@ -17,21 +17,12 @@ import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,16 +37,16 @@ public class GauchoSpaceClient {
 	/**
 	 * Retrieves the details of a user
 	 * @param url the url of the user page
-	 * @param cookies the cookies of the client viewing
+	 * @param session the session of the logged in user to act as
 	 * @return a User object containing the scraped data
 	 * @throws ClientProtocolException in case of an http protocol error
 	 * @throws IOException in case of a problem or the connection was aborted
      * @throws XMLException XML could not be parsed
 	 */
-	public static User getUserProfile(String url, CookieStore cookies) throws IOException, XMLException {
+	public static User getUserProfile(String url, Session session) throws IOException, XMLException {
 		//Create http client and context from cookies
 		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
+		HttpContext context = session.asContext();
 		
 		//Create get request
 		HttpGet get = new HttpGet(url);
@@ -68,7 +59,7 @@ public class GauchoSpaceClient {
 		
 		//Get content of response
 		BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-		String line = null;
+		String line;
 		StringBuilder coursesHtml = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
 			coursesHtml.append(line);
@@ -82,10 +73,10 @@ public class GauchoSpaceClient {
 		return UserParser.getUserFromHtml(contentString);
     }
 
-	public static List<User> getParticipantsFromCourse(int courseId, CookieStore cookies) throws IOException, XMLException {
+	public static List<User> getParticipantsFromCourse(int courseId, Session session) throws IOException, XMLException {
 		//Create client and context
 		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
+		HttpContext context = session.asContext();
 		
 		//Create GET request
 		//We need parameter mode to be 0 for "less detailed" in case default is more detailed
@@ -114,10 +105,10 @@ public class GauchoSpaceClient {
 		return ParticipantsParser.getParticipantsFromHtml(participantsHtmlString);
 	}
 	
-	public static List<Week> getWeeklyOutlineFromCourse(int courseId, CookieStore cookies) throws XMLException, IOException, com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException {
+	public static List<Week> getWeeklyOutlineFromCourse(int courseId, Session session) throws XMLException, IOException, com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException {
 		//Create client and context
 		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
+		HttpContext context = session.asContext();
 		
 		
 		//Create GET
@@ -139,10 +130,10 @@ public class GauchoSpaceClient {
 		return WeeklyOutlineParser.getWeeklyOutlineFromHtml(courseHtml);
 	}
 	
-	public static GradeFolder getGrade(int courseId, CookieStore cookies) throws IOException, XMLException {
+	public static GradeFolder getGrade(int courseId, Session session) throws IOException, XMLException {
 		//Create client and context
 		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
+		HttpContext context = session.asContext();
 		
 		//Create GET
 		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/grade/report/user/index.php?id=" + courseId);
@@ -166,16 +157,16 @@ public class GauchoSpaceClient {
 	/**
 	 * Gets a list of forums that belong under the specified course.
 	 * @param courseID The ID of the course under which these forums belong.
-	 * @param cookies The cookies of the user.
+     * @param session the session of the logged in user to act as
 	 * @return A list of Forums that belong to this Course.  Null if it 
 	 * couldn't be parsed. 
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public static List<Forum> getForums(int courseID, CookieStore cookies) throws ClientProtocolException, IOException {
+	public static List<Forum> getForums(int courseID, Session session) throws IOException {
 		//Create client and context
 		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
+		HttpContext context = session.asContext();
 		
 		//Create GET
 		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/mod/forum/index.php?id=" + courseID);
@@ -205,16 +196,16 @@ public class GauchoSpaceClient {
 	
 	/**
 	 * Gets a list of forums that belong under the specified course.
-	 * @param courseID The ID of the course under which these forums belong.
-	 * @param cookies The cookies of the user.
+	 * @param forumID The ID of the forum to fetch the discussions from
+     * @param session the session of the logged in user to act as
 	 * @return A list of Forums that belong to this Course.
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public static List<Discussion> getForum(int forumID, CookieStore cookies) throws IOException {
+	public static List<Discussion> getForum(int forumID, Session session) throws IOException {
 		//Create client and context
 		HttpClient client = getClient();
-		HttpContext context = getContext(cookies);
+		HttpContext context = session.asContext();
 		
 		//Create GET
 		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/mod/forum/view.php?f=" + forumID);
@@ -271,22 +262,6 @@ public class GauchoSpaceClient {
         return HttpClients.custom()
                 .setUserAgent("GauchoSpaceClient by Mark Nguyen @ mpnguyen@umail.ucsb.edu")
                 .build();
-	}
-	
-	/**
-	 * Creates an HttpClientContext that contains the cookies given.
-	 * @param cookies The cookies that the context will contain
-	 * @return The HttpContext containing the given CookeiStore
-	 */
-	protected static HttpClientContext getContext(CookieStore cookies) {
-		if (cookies == null){
-            cookies = new BasicCookieStore();
-        }
-
-        HttpClientContext context = new HttpClientContext();
-        context.setCookieStore(cookies);
-		
-		return context;
 	}
 	
 }

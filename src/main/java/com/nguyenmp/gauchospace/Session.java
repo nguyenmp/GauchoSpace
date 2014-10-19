@@ -38,7 +38,7 @@ public class Session {
      */
     public Session(String username, String password) throws IOException, IllegalArgumentException {
         CloseableHttpClient client = GauchoSpaceClient.getClient();
-        HttpContext context = GauchoSpaceClient.getContext(null);
+        HttpClientContext context = new HttpClientContext();
 
         //Get pre-cookies
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/login/index.php");
@@ -73,7 +73,7 @@ public class Session {
         if (contentString.contains(Constants.loggedInString)) {
             //Return logged in client's cookies
             //System.out.println("logged in string is contained! saving cookie...");
-            cookies = getCookies(context);
+            cookies = context.getCookieStore();
         } else {
             throw new IllegalArgumentException("Username and password did not result in a login");
         }
@@ -91,7 +91,7 @@ public class Session {
         if (cookies == null) return true;
 
         CloseableHttpClient client = GauchoSpaceClient.getClient();
-        HttpContext context = GauchoSpaceClient.getContext(cookies);
+        HttpContext context = this.asContext();
 
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/");
 
@@ -117,7 +117,7 @@ public class Session {
 
         String sessionKey = getSessionKey();
         CloseableHttpClient client = GauchoSpaceClient.getClient();
-        HttpContext context = GauchoSpaceClient.getContext(cookies);
+        HttpContext context = this.asContext();
 
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/login/logout.php?sesskey=" + sessionKey);
 
@@ -131,6 +131,18 @@ public class Session {
     }
 
     /**
+     * Creates an HttpClientContext that contains the cookies given from the session.
+     * @return The HttpContext containing the given CookieStore
+     */
+    public HttpClientContext asContext() {
+
+        HttpClientContext context = new HttpClientContext();
+        context.setCookieStore(cookies);
+
+        return context;
+    }
+
+    /**
      * Gets the Courses of the user who owns the cookies.
      * @return The list of courses in order of the server
      * @throws IOException in case of a problem or the connection was aborted,
@@ -140,7 +152,7 @@ public class Session {
     public Course[] getCourses() throws IOException, XMLException {
         //Create client and context
         CloseableHttpClient client = GauchoSpaceClient.getClient();
-        HttpContext context = GauchoSpaceClient.getContext(cookies);
+        HttpContext context = this.asContext();
 
         //Create GET
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/my/");
@@ -177,7 +189,7 @@ public class Session {
      */
     private String getSessionKey() throws IOException {
         CloseableHttpClient client = GauchoSpaceClient.getClient();
-        HttpContext context = GauchoSpaceClient.getContext(cookies);
+        HttpContext context = this.asContext();
 
         HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/");
 
@@ -209,20 +221,5 @@ public class Session {
         args.add(new BasicNameValuePair("testcookies", "1"));
 
         return new UrlEncodedFormEntity(args);
-    }
-
-    /**
-     * Extracts the CookieStore from an HttpContext.
-     * @param context The HttpContext to extract the CookieStore from
-     * @return The CookieStore in the HttpContext.  null if there is no CookieStore or
-     * the COOKIE_STORE attribute doesn't contain a compatable CookieStore object.
-     */
-    private static CookieStore getCookies(HttpContext context) {
-        Object attribute = context.getAttribute(HttpClientContext.COOKIE_STORE);
-
-        if (attribute instanceof CookieStore)
-            return (CookieStore) attribute;
-
-        else return null;
     }
 }

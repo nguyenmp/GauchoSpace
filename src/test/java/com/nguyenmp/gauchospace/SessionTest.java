@@ -1,7 +1,10 @@
 package com.nguyenmp.gauchospace;
 
 import com.nguyenmp.gauchospace.thing.Course;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -33,6 +36,19 @@ public class SessionTest {
         assertTrue(session.logout());
         assertFalse(session.isLoggedIn());
         assertFalse(session.isLoggedIn());
+    }
+
+    @Test
+    public void testAsContext() throws IOException {
+        // Load credentials from stupid store
+        String username = Credentials.Username();
+        String password = Credentials.Password();
+
+        Session session = new Session(username, password);
+
+        HttpClientContext context = session.asContext();
+        assertNotNull(context);
+        assertTrue(context.getCookieStore().getCookies().size() > 0);
     }
 
     @Test
