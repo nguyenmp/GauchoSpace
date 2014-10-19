@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class SessionTest {
 
     @Test
-    public void test() throws Exception {
+    public void testLoginLogout() throws Exception {
         // Load credentials from stupid store
         String username = Credentials.Username();
         String password = Credentials.Password();
@@ -32,6 +32,16 @@ public class SessionTest {
         assertTrue(session.logout());
         assertFalse(session.isLoggedIn());
         assertFalse(session.isLoggedIn());
+    }
+
+    @Test
+    public void testGetCourses() throws Exception {
+        // Load credentials from stupid store
+        String username = Credentials.Username();
+        String password = Credentials.Password();
+
+        Session session = new Session(username, password);
+        assertNotNull(session.getCourses());
     }
 
     @Test(expected = IllegalArgumentException.class)
