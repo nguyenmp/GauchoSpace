@@ -29,6 +29,24 @@ public class SessionTest {
         assertFalse(session2.isLoggedIn());
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testExpiredLogin() throws Exception {
+        // Load credentials from stupid store
+        String username = Credentials.Username();
+        String password = Credentials.Password();
+
+        Session session = new Session(username, password);
+        assertTrue(session.isLoggedIn());
+
+        CookieStore cookies = session.getCookies();
+
+        session.logout();
+        assertFalse(session.isLoggedIn());
+
+        // Exception should occur here since we login with expired cookies
+        new Session(cookies);
+    }
+
     @Test
     public void testLoginLogout() throws Exception {
         // Load credentials from stupid store
