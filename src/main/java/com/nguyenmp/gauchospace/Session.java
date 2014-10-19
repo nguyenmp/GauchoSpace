@@ -135,12 +135,12 @@ public class Session {
 
     /**
      * Gets the Courses of the user who owns the cookies.
-     * @return The list of courses
+     * @return The list of courses in order of the server
      * @throws IOException in case of a problem or the connection was aborted,
      * if the stream could not be created, or if an I/O error occured
      * @throws XMLException if the XML could not be parsed
      */
-    public List<Course> getCourses() throws IOException, XMLException {
+    public Course[] getCourses() throws IOException, XMLException {
         //Create client and context
         HttpClient client = GauchoSpaceClient.getClient();
         HttpContext context = GauchoSpaceClient.getContext(cookies);
@@ -156,7 +156,7 @@ public class Session {
 
         //Read content
         BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
-        String line = null;
+        String line;
         StringBuilder coursesHtml = new StringBuilder();
         while ((line = reader.readLine()) != null) {
             coursesHtml.append(line);
@@ -167,10 +167,7 @@ public class Session {
         get.abort();
 
         //Compile and parse courses
-        List<Course> courses = CoursesParser.getCoursesFromHtml(contentString);
-        System.out.println(courses);
-        //Return the parsed content
-        return courses;
+        return CoursesParser.getCoursesFromHtml(contentString);
     }
 
     /**

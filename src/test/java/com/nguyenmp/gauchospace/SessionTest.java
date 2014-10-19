@@ -1,5 +1,6 @@
 package com.nguyenmp.gauchospace;
 
+import com.nguyenmp.gauchospace.thing.Course;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -41,9 +42,10 @@ public class SessionTest {
         String password = Credentials.Password();
 
         Session session = new Session(username, password);
-        assertNotNull(session.getCourses());
+        Course[] courses = session.getCourses();
+        assertNotNull(courses);
 
-        // TODO: We could do validation on the courses too
+        assertTrue(courses.length > 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
