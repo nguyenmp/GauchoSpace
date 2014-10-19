@@ -12,7 +12,6 @@ import com.nguyenmp.gauchospace.parser.*;
 import com.nguyenmp.gauchospace.thing.Discussion;
 import com.nguyenmp.gauchospace.thing.Forum;
 import com.nguyenmp.gauchospace.thing.User;
-import com.nguyenmp.gauchospace.thing.Week;
 import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -105,31 +104,6 @@ public class GauchoSpaceClient {
 		return ParticipantsParser.getParticipantsFromHtml(participantsHtmlString);
 	}
 	
-	public static List<Week> getWeeklyOutlineFromCourse(int courseId, Session session) throws XMLException, IOException, com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException {
-		//Create client and context
-		HttpClient client = getClient();
-		HttpContext context = session.asContext();
-		
-		
-		//Create GET
-		HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/course/view.php?id=" + courseId);
-
-		//Do GET
-		HttpResponse response = client.execute(get, context);
-		
-		//Get content of response
-		HttpEntity entity = response.getEntity();
-		
-		//Read content
-		String courseHtml = getStringFromEntity(entity);
-		
-		//Close connection
-		get.abort();
-
-		//Compile and parse courses
-		return WeeklyOutlineParser.getWeeklyOutlineFromHtml(courseHtml);
-	}
-	
 	public static GradeFolder getGrade(int courseId, Session session) throws IOException, XMLException {
 		//Create client and context
 		HttpClient client = getClient();
@@ -202,7 +176,7 @@ public class GauchoSpaceClient {
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public static List<Discussion> getForum(int forumID, Session session) throws IOException {
+	public static List<Discussion> getDiscussions(int forumID, Session session) throws IOException {
 		//Create client and context
 		HttpClient client = getClient();
 		HttpContext context = session.asContext();
@@ -241,7 +215,7 @@ public class GauchoSpaceClient {
 	 * @return The String representation of the content of the entity.
 	 * @throws IOException  If an I/O error occurs
 	 */
-	protected static String getStringFromEntity(HttpEntity entity) throws IOException {
+	public static String getStringFromEntity(HttpEntity entity) throws IOException {
 		//Read content
 		BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
 		String line;
@@ -257,7 +231,7 @@ public class GauchoSpaceClient {
 	 * Creates an HttpClient that with a UserAgent equal to "GauchoSpaceClient by Mark Nguyen @ mpnguyen@umail.ucsb.edu".
 	 * @return An HttpClient with the preset user-agent.
 	 */
-	protected static CloseableHttpClient getClient() {
+	public static CloseableHttpClient getClient() {
 		//Create client
         return HttpClients.custom()
                 .setUserAgent("GauchoSpaceClient by Mark Nguyen @ mpnguyen@umail.ucsb.edu")
