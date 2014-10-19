@@ -9,8 +9,10 @@
 package com.nguyenmp.gauchospace;
 
 import com.nguyenmp.gauchospace.parser.*;
-import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser.UnparsableHtmlException;
-import com.nguyenmp.gauchospace.thing.*;
+import com.nguyenmp.gauchospace.thing.Discussion;
+import com.nguyenmp.gauchospace.thing.Forum;
+import com.nguyenmp.gauchospace.thing.User;
+import com.nguyenmp.gauchospace.thing.Week;
 import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

@@ -8,22 +8,16 @@
  */
 package com.nguyenmp.gauchospace.parser;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Scanner;
-
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
+import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
+import com.nguyenmp.gauchospace.thing.grade.GradeItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
-import com.nguyenmp.gauchospace.thing.grade.GradeFolder;
-import com.nguyenmp.gauchospace.thing.grade.GradeItem;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class GradeParser {
 	public static GradeFolder getGradeFromHtml(String gradeHtml) throws IOException, XMLException {
