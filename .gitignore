@@ -1,3 +1,7 @@
 /build
+*.class
+*.jar
+out/
+.idea/
 *.iml
 credentials
