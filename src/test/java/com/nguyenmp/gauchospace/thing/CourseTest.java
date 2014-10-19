@@ -55,7 +55,16 @@ public class CourseTest {
 
     @Test
     public void testGetWeeklyOutline1() throws Exception {
+        String username = Credentials.Username();
+        String password = Credentials.Password();
 
+        Session session = new Session(username, password);
+        Course[] courses = session.getCourses();
+        for (Course course : courses) {
+            Week[] weeks = Course.getWeeklyOutline(course.getCourseID(), session);
+            assertNotNull(weeks);
+            assertTrue(weeks.length > 9); // TODO: This isn't actually what I want to test for
+        }
     }
 
     @Test
