@@ -21,6 +21,7 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -273,18 +274,17 @@ public class GauchoSpaceClient {
 	}
 	
 	/**
-	 * Creates an HttpContext that contains the cookies given.
+	 * Creates an HttpClientContext that contains the cookies given.
 	 * @param cookies The cookies that the context will contain
 	 * @return The HttpContext containing the given CookeiStore
 	 */
-	protected static HttpContext getContext(CookieStore cookies) {
-		HttpContext context = new BasicHttpContext();;
-		
+	protected static HttpClientContext getContext(CookieStore cookies) {
 		if (cookies == null){
             cookies = new BasicCookieStore();
-            //System.out.println("COOKIE WAS NULL!");
         }
-		context.setAttribute(ClientContext.COOKIE_STORE, cookies);
+
+        HttpClientContext context = new HttpClientContext();
+        context.setCookieStore(cookies);
 		
 		return context;
 	}
