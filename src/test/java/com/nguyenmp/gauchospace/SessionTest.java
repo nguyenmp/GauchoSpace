@@ -46,6 +46,16 @@ public class SessionTest {
         assertNotNull(courses);
 
         assertTrue(courses.length > 0);
+        for (Course course : courses) {
+            assertNotNull(course.mName);
+            assertNotEquals(course.mName.trim().length(), 0);
+            assertNotNull(course.mTitle);
+            assertNotEquals(course.mTitle.trim().length(), 0);
+            assertNotNull(course.mQuarter);
+            assertNotEquals(course.mQuarter.trim().length(), 0);
+            assertNotNull(course.mUrl);
+            assertNotEquals(course.mUrl.trim().length(), 0);
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
