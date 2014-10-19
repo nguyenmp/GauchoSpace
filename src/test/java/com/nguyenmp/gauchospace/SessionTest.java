@@ -33,4 +33,24 @@ public class SessionTest {
         assertFalse(session.isLoggedIn());
         assertFalse(session.isLoggedIn());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull1() throws Exception {
+        new Session(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull2() throws Exception {
+        new Session(null, "");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull3() throws Exception {
+        new Session("", null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull4() throws Exception {
+        new Session("", "");
+    }
 }
