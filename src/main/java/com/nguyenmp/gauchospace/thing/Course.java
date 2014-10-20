@@ -4,17 +4,14 @@ import com.nguyenmp.gauchospace.GauchoSpaceClient;
 import com.nguyenmp.gauchospace.Session;
 import com.nguyenmp.gauchospace.parser.WeeklyOutlineParser;
 import com.nguyenmp.gauchospace.parser.XMLException;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.protocol.HttpContext;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 public class Course implements Serializable {
 	public static final long serialVersionUID = 6265010175935790471L;
@@ -24,17 +21,14 @@ public class Course implements Serializable {
 	public String mTitle = null;
 	public String mQuarter = null;
 
-    public int getCourseID() throws URISyntaxException {
+    public int getCourseID() throws URISyntaxException, MalformedURLException {
         if (mUrl == null) throw new NullPointerException("Course URL was set to null, and the course ID could not be inferred");
 
-        URIBuilder uriBuilder = new URIBuilder(mUrl);
-        for (NameValuePair nameValuePair : uriBuilder.getQueryParams()) {
-            if (nameValuePair.getName().equalsIgnoreCase("id")) {
-                return Integer.parseInt(nameValuePair.getValue());
-            }
+        try {
+            return Integer.parseInt(GauchoSpaceClient.parseUrlQueryString(new URL(mUrl).getQuery()).get("id")[0]);
+        } catch (NumberFormatException e) {
+            throw new NullPointerException("Course URL does not contain a course ID");
         }
-
-        throw new NullPointerException("Course URL does not contain a course ID");
     }
 
     public Week[] getWeeklyOutline(Session session) throws URISyntaxException, IOException, XMLException {
@@ -43,23 +37,9 @@ public class Course implements Serializable {
 
     public static Week[] getWeeklyOutline(int courseId, Session session) throws XMLException, IOException{
         //Create client and context
-        HttpClient client = GauchoSpaceClient.getClient();
-        HttpContext context = session.asContext();
-
-        //Create GET
-        HttpGet get = new HttpGet("https://gauchospace.ucsb.edu/courses/course/view.php?id=" + courseId);
-
-        //Do GET
-        HttpResponse response = client.execute(get, context);
-
-        //Get content of response
-        HttpEntity entity = response.getEntity();
-
-        //Read content
-        String courseHtml = GauchoSpaceClient.getStringFromEntity(entity);
-
-        //Close connection
-        get.abort();
+        OkHttpClient client = GauchoSpaceClient.getClient(session);
+        Request get = new Request.Builder().url("https://gauchospace.ucsb.edu/courses/course/view.php?id=" + courseId).build();
+        String courseHtml = client.newCall(get).execute().body().string();
 
         //Compile and parse courses
         return WeeklyOutlineParser.getWeeklyOutlineFromHtml(courseHtml);

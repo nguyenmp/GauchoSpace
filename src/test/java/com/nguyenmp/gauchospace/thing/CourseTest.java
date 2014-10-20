@@ -4,11 +4,9 @@ import com.nguyenmp.gauchospace.Credentials;
 import com.nguyenmp.gauchospace.Session;
 import org.junit.Test;
 
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CourseTest {
 
@@ -25,14 +23,14 @@ public class CourseTest {
         course.getCourseID();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = MalformedURLException.class)
     public void testGetNullCourseID2() throws Exception {
         Course course = new Course();
         course.mUrl = "";
         course.getCourseID();
     }
 
-    @Test(expected = URISyntaxException.class)
+    @Test(expected = MalformedURLException.class)
     public void testGetNullCourseID3() throws Exception {
         Course course = new Course();
         course.mUrl = "foo bar";

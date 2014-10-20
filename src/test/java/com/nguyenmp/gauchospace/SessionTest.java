@@ -1,11 +1,9 @@
 package com.nguyenmp.gauchospace;
 
 import com.nguyenmp.gauchospace.thing.Course;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.protocol.HttpClientContext;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.net.CookieStore;
 
 import static org.junit.Assert.*;
 
@@ -76,19 +74,6 @@ public class SessionTest {
     }
 
     @Test
-    public void testAsContext() throws IOException {
-        // Load credentials from stupid store
-        String username = Credentials.Username();
-        String password = Credentials.Password();
-
-        Session session = new Session(username, password);
-
-        HttpClientContext context = session.asContext();
-        assertNotNull(context);
-        assertTrue(context.getCookieStore().getCookies().size() > 0);
-    }
-
-    @Test
     public void testGetCourses() throws Exception {
         // Load credentials from stupid store
         String username = Credentials.Username();
@@ -111,17 +96,17 @@ public class SessionTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNull1() throws Exception {
         new Session(null, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNull2() throws Exception {
         new Session(null, "");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNull3() throws Exception {
         new Session("", null);
     }

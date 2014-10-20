@@ -1,6 +1,6 @@
 package com.nguyenmp.gauchospace;
 
-import org.apache.http.impl.client.CloseableHttpClient;
+import com.squareup.okhttp.OkHttpClient;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -9,9 +9,23 @@ public class GauchoSpaceClientTest {
 
     @Test
     public void testGetClient() throws Exception {
-        CloseableHttpClient client = GauchoSpaceClient.getClient();
+        String username = Credentials.Username();
+        String password = Credentials.Password();
+
+        Session session = new Session(username, password);
+        OkHttpClient client = GauchoSpaceClient.getClient(session);
         assertNotNull(client);
-        client.close();
-        // TODO: In the future, it may be wise to test that the useragent was set
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testNullGetClient1() throws Exception {
+        OkHttpClient client = GauchoSpaceClient.getClient(new Session(null));
+        assertNotNull(client);
+    }
+
+    @Test
+    public void testNullGetClient2() throws Exception {
+        OkHttpClient client = GauchoSpaceClient.getClient(null);
+        assertNotNull(client);
     }
 }
